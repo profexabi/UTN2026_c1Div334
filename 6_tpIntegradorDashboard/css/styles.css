@@ -84,6 +84,10 @@ header, .enlaces {
     border-radius: 5px;
 }
 
+.lista-producto p {
+    font-size: 14px;
+}
+
 .lista-producto img, .lista-producto p {
     margin-bottom: 0;
 }

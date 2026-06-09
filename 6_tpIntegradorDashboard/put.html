@@ -139,13 +139,8 @@
             updateProductButton.addEventListener("click", event => {
                 event.stopPropagation(); // Evitamos la propagacion de eventos
 
-                const confirmacion = confirm("Querés actualizar este producto?");
+                formularioPutProducto(event, producto);
                 
-                if(!confirmacion) {
-                    alert("Actualización cancelada");
-                } else {
-                    formularioPutProducto(event, producto);
-                }
             });
         }
 
@@ -156,10 +151,13 @@
             // Verificamos si el producto llega correctamente
             console.log(producto);
 
-            let updateProductForm = `
+            let htmlUpdateForm = `
                 <h2>Actualizar producto</h2>
             
-                <form id="postProduct-form" class="form-alta">
+                <form id="updateProduct-form" class="form-alta">
+
+                    <input type="hidden" id="idProd" name="id" value="${producto.id}">
+
                     <label for="nameProd">Nombre</label>
                     <input type="text" name="name" id="nameProd" value="${producto.name}" required>
 
@@ -187,7 +185,71 @@
                 </form>
             `;
 
-            contenedorForm.innerHTML = updateProductForm;
+            contenedorForm.innerHTML = htmlUpdateForm;
+
+            const updateProductForm = document.getElementById("updateProduct-form");
+
+            updateProductForm.addEventListener("submit", event => {
+                actualizarProducto(event); // Aca enviamos los datos del formulario al servidor
+            });
+        }
+
+        // Envio de datos del formulario de actualizacion de producto
+        async function actualizarProducto(event) {
+            event.preventDefault(); // Evitamos el envio por defecto del formulario
+
+            const confirmacion = confirm("Querés actualizar este producto?");
+            
+            // En caso de que cancelemos, se termino la funcion
+            if(!confirmacion) {
+                alert("Actualización cancelada");
+                return;
+            }
+
+            // event.target hace referencia la formulario que detono el evento
+            const formData = new FormData(event.target);
+
+            // Aca transformamos nuestro objeto FormData en un objeto normal JS
+            const data = Object.fromEntries(formData.entries());
+            /*
+            Object
+                id: "41"
+                active: "1"
+                category: "food"
+                image: "https://pointlaventanita.com/wp-content/uploads/2024/05/chabona.webp"
+                name: "Fernet Cola Chabona"
+                price: "4300.00"
+            */
+            console.table(data);
+            
+            try {
+                const response = await fetch("http://localhost:3000/api/products", {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                console.log(response);
+                const result = await response.json();
+
+                // Si respuesta es 200 OK
+                if(response.ok) {
+                    console.log(result.message);
+                    alert(result.message);
+
+                    contenedorForm.innerHTML = "";
+
+                } else {
+                    console.error("Error:", result.message);
+                }
+
+            } catch (error) {
+                console.error("Error al enviar los datos: ", error.message);
+                alert("Error al actualizar el producto");
+            }
+            
         }
         
     </script>
