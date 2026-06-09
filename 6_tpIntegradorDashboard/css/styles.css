@@ -63,3 +63,37 @@ header, .enlaces {
     flex-wrap: wrap;
     justify-content: space-between;
 }
+
+#contenedor-productos ul {
+    margin-top: 20px;
+    width: 100%;
+    /* border: 1px solid; */
+    padding-left: 0;
+}
+
+.lista-producto {
+    display: flex;
+    align-items: center;
+    /* border: 1px solid; */
+    width: 100%;
+    justify-content: space-around;
+}
+
+.lista-producto img {
+    width: 70px;
+    border-radius: 5px;
+}
+
+.lista-producto img, .lista-producto p {
+    margin-bottom: 0;
+}
+
+.form-alta {
+    display: flex;
+    flex-direction: column;
+    width: 45%;
+}
+
+#deleteProduct-button {
+    margin-bottom: 0;
+}
