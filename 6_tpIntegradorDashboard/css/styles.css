@@ -1,3 +1,10 @@
+:root {
+    --msg-error-bg: #f8d7da;
+    --msg-error-color: #58151c;
+    --msg-error-border: #f1aeb5;
+}
+
+
 ul {
     list-style-type: none;
 }
@@ -100,4 +107,15 @@ header, .enlaces {
 
 #deleteProduct-button {
     margin-bottom: 0;
+}
+
+.mensaje-error {
+    color: var(--msg-error-color);
+    background-color: var(--msg-error-bg);
+    border: 1px solid var(--msg-error-border);
+    border-radius: 6px;
+    margin-top: 20px;
+    padding: 15px;
+    width: 100%;
+    text-align: center;
 }

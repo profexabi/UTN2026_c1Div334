@@ -3,9 +3,9 @@
 ## FECHA RECUPERATORIO 1ER PARCIAL -> *Lunes 08 de junio en paralelo a la clase*
 
 ## Prox clase
-- Terminar vista PUT para actualizar productp
-- Optimizaciones endpoints
-- Optimizaciones vistas
+- Terminar optimizacion vista GET by id
+- Optimizaciones endpoints POST, PUT, DELETE
+- Optimizaciones vistas POST, PUT, DELETE
 - Modularizacion patron MVC
 
 ---

@@ -77,6 +77,12 @@
                 const response = await fetch("http://localhost:3000/api/products");
                 const datos = await response.json();
 
+                ////////////////////
+                // Optimizacion 1: Verificamos que la respuesta HTTP fue exitosa, caso contrario, crearmos un error
+                if(!response.ok) {
+                    throw new Error(`Error: ${response.status} ${response.message}`);
+                }
+
                 const productos = datos.payload;
                 console.log(productos);
 
@@ -84,7 +90,13 @@
 
 
             } catch (error) {
-                console.error(error);
+                console.error(`Error al cargar productos: ${error}`);
+
+                ////////////////////
+                // Optimizacion 2: Mostramos el error en el DOM
+                contenedorProductos.innerHTML = `
+                    <p class="mensaje-error">${error}</p>
+                `;
             }
         }
 

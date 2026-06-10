@@ -754,3 +754,178 @@ async function eliminarProducto(id) {
     }
 }
 ```
+
+
+---
+
+
+## 4. Optimizamos endpoints y vistas
+
+### 4.1 Optimizando endpoint `GET all products`
+```js
+// GET all products
+app.get("/api/products", async (req, res) => {
+    try {
+
+        ///////////////////
+        // Optimizacion 1: evitamos traer columnas innecesarias en la consulta SQL (mas eficiente en memoria y red)
+        const sql = "SELECT id, name, price, image FROM productssss";
+
+        const [rows] = await connection.query(sql); // En rows guardamos los resultados de nuestra sentencia SQL
+        // console.log(rows);
+        // el objeto res nos permitira devolver un codigo de estado y un tipo de respuesta
+
+        ///////////////////
+        // Optimizacion 2: Respuesta 404 si la BBDD no devuelve productos
+        if (rows.length === 0) {
+            return res.status(404).json({
+                message: "No se encontraron productos"
+            })
+        }
+
+        res.status(200).json({
+
+            ///////////////////
+            // Optimizacion 3: Opcional, podemos devolver la cantidad de productos
+            total: rows.length,
+            payload: rows
+        });
+
+    } catch (error) {
+        console.log("Error obteniendo productos: ", error.message);
+
+        ///////////////////
+        // Optimizacion 4: Si fallo la conexion a la BBDD, tardo demasiado, la tabla no existe o hay error de sintaxis
+        res.status(500).json({
+            message: "Error interno al obtener productos"
+        })
+    }
+});
+```
+
+### 4.2 Optimizando vista `GET all products`
+```js
+const contenedorProductos = document.getElementById("contenedor-productos");
+
+async function mostrarProductos () {
+    try {
+        const response = await fetch("http://localhost:3000/api/products");
+        const datos = await response.json();
+
+        ////////////////////
+        // Optimizacion 1: Verificamos que la respuesta HTTP fue exitosa, caso contrario, crearmos un error
+        if(!response.ok) {
+            throw new Error(`Error: ${response.status} ${response.message}`);
+        }
+
+        const productos = datos.payload;
+        console.log(productos);
+
+        renderizarProductos(productos);
+
+
+    } catch (error) {
+        console.error(`Error al cargar productos: ${error}`);
+
+        ////////////////////
+        // Optimizacion 2: Mostramos el error en el DOM
+        contenedorProductos.innerHTML = `
+            <p class="mensaje-error">${error}</p>
+        `;
+    }
+}
+
+function renderizarProductos(array) {
+    let htmlProductos = "";
+
+    array.forEach(producto => {
+        htmlProductos += `
+        <div class="card-producto">
+            <img src="${producto.image}" alt="${producto.name}">
+            <h4>${producto.name}</h4>
+            <p>Id: ${producto.id}</p>
+            <p>$${producto.price}</p>
+        </div>
+        `;
+
+        contenedorProductos.innerHTML = htmlProductos;
+    })
+}
+
+mostrarProductos();
+```
+
+
+---
+
+
+### 4.3 Optimizando endpoint `GET by id`
+```js
+// Middleware de ruta para filtrar ids no validos
+const validateId = (req, res, next) => {
+    const { id } = req.params;
+
+    // REGEX para aceptar solo digitos enteros positivos (filtrando "42abc", "0" o "-1", espacios)
+    if(!/^\d+$/.test(id)) {
+        return res.status(400).json({
+            error: "El ID debe ser un numero entero positivo"
+        });
+    }
+
+    // Convertimos el string a numero entero integer en base 10 decimal, y lo adjuntamos al objeto req
+    const parsedId = parseInt(id, 10);
+
+    if(parsedId === 0) {
+        return res.status(400).json({
+            error: "El id debe ser mayor a 0"
+        });
+    }
+
+    req.id = parsedId;
+
+    next(); // Pasamos al siguiente middleware o a la respuesta
+}
+
+
+// GET product by id
+app.get("/api/products/:id", validateId, async (req, res) => {
+try {
+    /*//////////////////////
+    // Optimizacion 1:  Ahora el id ya lo obtiene el middleware validateId
+    // Gracias al destructuring, agarramos el valor id de req.params
+    const { id } = req.params;
+    // const id = req.params.id -> misma solucion
+    */
+
+    //////////////////////
+    // Optimizacion 2: Seleccionamos los campos necesarios
+    // Este interrogante es el placeholder "?" que nos permite escribir sentencias SQL seguras (preveniendo ataques de inyeccion SQL)
+    const sql = "SELECT id, name, price, image FROM products where products.id = ?";
+    const [rows] = await connection.query(sql, [req.id]);
+    // console.log(rows);
+
+    //////////////////////
+    // Optimizacion 3: Si no encontramos un producto con ese id, devolvemos 404
+    if(rows.length === 0) {
+        return res.status(404).json({
+            error: `No se encontro producto con id ${req.id}`
+        });
+    }
+
+    res.status(200).json({
+        payload: rows[0]
+    });
+
+} catch (error) {
+    console.log("Error obteniendo producto con id: ", error.message);
+
+    ///////////////////
+    // Optimizacion 4: Le devolvemos un status 500 al cliente
+    res.status(500).json({
+        error: "Error interno al obtener un producto con id"
+    })
+}
+```
+
+
+---

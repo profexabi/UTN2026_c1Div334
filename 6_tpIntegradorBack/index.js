@@ -32,7 +32,32 @@ app.use((req, res, next) => {
 */
 app.use(express.json());
 
-// TO DO:  Middleware para parsear a JSON en las solicitudes POST y PUT
+
+// Middleware de ruta para filtrar ids no validos
+const validateId = (req, res, next) => {
+    const { id } = req.params;
+
+    // REGEX para aceptar solo digitos enteros positivos (filtrando "42abc", "0" o "-1", espacios)
+    if(!/^\d+$/.test(id)) {
+        return res.status(400).json({
+            error: "El ID debe ser un numero entero positivo"
+        });
+    }
+
+    // Convertimos el string a numero entero integer en base 10 decimal, y lo adjuntamos al objeto req
+    const parsedId = parseInt(id, 10);
+
+    if(parsedId === 0) {
+        return res.status(400).json({
+            error: "El id debe ser mayor a 0"
+        });
+    }
+
+    req.id = parsedId;
+
+    next(); // Pasamos al siguiente middleware o a la respuesta
+}
+
 
 
 
@@ -45,32 +70,67 @@ app.get("/", (req, res) => {
 // GET all products
 app.get("/api/products", async (req, res) => {
     try {
-        const sql = "SELECT * FROM products";
+
+        ///////////////////
+        // Optimizacion 1: evitamos traer columnas innecesarias en la consulta SQL (mas eficiente en memoria y red)
+        const sql = "SELECT id, name, price, image FROM productssss";
+
         const [rows] = await connection.query(sql); // En rows guardamos los resultados de nuestra sentencia SQL
         // console.log(rows);
-
         // el objeto res nos permitira devolver un codigo de estado y un tipo de respuesta
+
+        ///////////////////
+        // Optimizacion 2: Respuesta 404 si la BBDD no devuelve productos
+        if (rows.length === 0) {
+            return res.status(404).json({
+                message: "No se encontraron productos"
+            })
+        }
+
         res.status(200).json({
+
+            ///////////////////
+            // Optimizacion 3: Opcional, podemos devolver la cantidad de productos
+            total: rows.length,
             payload: rows
         });
 
     } catch (error) {
         console.log("Error obteniendo productos: ", error.message);
+
+        ///////////////////
+        // Optimizacion 4: Si fallo la conexion a la BBDD, tardo demasiado, la tabla no existe o hay error de sintaxis
+        res.status(500).json({
+            message: "Error interno al obtener productos"
+        })
     }
 });
 
 
 // GET product by id
-app.get("/api/products/:id", async (req, res) => {
+app.get("/api/products/:id", validateId, async (req, res) => {
     try {
+        /*//////////////////////
+        // Optimizacion 1:  Ahora el id ya lo obtiene el middleware validateId
         // Gracias al destructuring, agarramos el valor id de req.params
         const { id } = req.params;
         // const id = req.params.id -> misma solucion
+        */
 
+        //////////////////////
+        // Optimizacion 2: Seleccionamos los campos necesarios
         // Este interrogante es el placeholder "?" que nos permite escribir sentencias SQL seguras (preveniendo ataques de inyeccion SQL)
-        const sql = "SELECT * FROM products where products.id = ?";
-        const [rows] = await connection.query(sql, [id]);
+        const sql = "SELECT id, name, price, image FROM products where products.id = ?";
+        const [rows] = await connection.query(sql, [req.id]);
         // console.log(rows);
+
+        //////////////////////
+        // Optimizacion 3: Si no encontramos un producto con ese id, devolvemos 404
+        if(rows.length === 0) {
+            return res.status(404).json({
+                error: `No se encontro producto con id ${req.id}`
+            });
+        }
 
         res.status(200).json({
             payload: rows[0]
@@ -78,6 +138,12 @@ app.get("/api/products/:id", async (req, res) => {
 
     } catch (error) {
         console.log("Error obteniendo producto con id: ", error.message);
+
+        ///////////////////
+        // Optimizacion 4: Le devolvemos un status 500 al cliente
+        res.status(500).json({
+            error: "Error interno al obtener un producto con id"
+        })
     }
 });
 
