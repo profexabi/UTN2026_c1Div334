@@ -86,20 +86,35 @@
         const contenedorProductos = document.getElementById("contenedor-productos");
         const getProductForm = document.getElementById("getProduct-form");
         const contenedorForm = document.getElementById("contenedor-form");
+        const urlBase = "http://localhost:3000/api/products";
 
         getProductForm.addEventListener("submit", async event => {
             event.preventDefault(); //Evitamos el envio por defecto HTML del formulario
 
+            // Optimizacion 1: Saltamos el FormData + Object.fromEntries
             // Extraemos el id del producto
             const idProd = event.target.idProd.value.trim();
+
+            // Optimizacion 2: Nos aseguramos de que se haya enviado un id valido
+            if (!idProd) {
+                mostrarError("Ingresá un id valido");
+                return;
+            }
             
             try {
                 // Vamos a hacer el fetch a una URL personalizada
-                const response = await fetch(`http://localhost:3000/api/products/${idProd}`);
+                const response = await fetch(`${urlBase}/${idProd}`);
                 console.log(response);
 
                 // Procesamos los datos que devuelve el servidor
                 const datos = await response.json();
+
+                // Optimizacion 4: Evaluamos si el servidor respondio correctamente (200 -> ok)
+                if (!response.ok) { // Que hacer si la respuesta no es 200 (404 o 500)
+                    mostrarError(datos.message);
+                    return; // La sentencia return FINALIZA la restante ejecucion del codigo
+                }
+
 
                 const producto = datos.payload;
 
@@ -119,6 +134,20 @@
                 console.error("Error al obtener el producto", error);
             }
         });
+
+        // Imprimimos mensaje de error
+        function mostrarError(mensaje) {
+            contenedorProductos.innerHTML = `
+                <p class="mensaje mensaje-error">${mensaje}</p>
+            `;
+        }
+
+        // Imprimimos mensaje de exito
+        function mostrarExito(mensaje) {
+            contenedorProductos.innerHTML = `
+                <p class="mensaje mensaje-exito">${mensaje}</p>
+            `;
+        }
 
         function renderizarProducto(producto) {
             let htmlProducto = `
@@ -140,7 +169,6 @@
                 event.stopPropagation(); // Evitamos la propagacion de eventos
 
                 formularioPutProducto(event, producto);
-                
             });
         }
 
@@ -206,11 +234,16 @@
                 return;
             }
 
+            // Optimizacion 3 OPCIONAL
+            //const data = Object.fromEntries(new FormData(event.target().entries()));
+
+            
             // event.target hace referencia la formulario que detono el evento
             const formData = new FormData(event.target);
 
             // Aca transformamos nuestro objeto FormData en un objeto normal JS
             const data = Object.fromEntries(formData.entries());
+            
             /*
             Object
                 id: "41"
@@ -221,9 +254,16 @@
                 price: "4300.00"
             */
             console.table(data);
+
+
+            // Optimizacion 4: Validacion previa en el clinete
+            if (!data.name || !data.image || !data.price) {
+                alert("Todos los campos son obligatorios");
+                return;
+            }
             
             try {
-                const response = await fetch("http://localhost:3000/api/products", {
+                const response = await fetch(urlBase, {
                     method: "PUT",
                     headers: {
                         "Content-Type": "application/json"
@@ -236,18 +276,20 @@
 
                 // Si respuesta es 200 OK
                 if(response.ok) {
-                    console.log(result.message);
-                    alert(result.message);
-
+                    // Vaciamos el formulario de actualizacion
                     contenedorForm.innerHTML = "";
+                    console.log(result.message);
+                    mostrarExito(result.message);
 
                 } else {
                     console.error("Error:", result.message);
+                    mostrarError(result.message);
                 }
 
             } catch (error) {
                 console.error("Error al enviar los datos: ", error.message);
-                alert("Error al actualizar el producto");
+                // alert("Error al actualizar el producto");
+                mostrarError(error.message);
             }
             
         }

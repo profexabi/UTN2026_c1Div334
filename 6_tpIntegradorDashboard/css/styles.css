@@ -2,6 +2,9 @@
     --msg-error-bg: #f8d7da;
     --msg-error-color: #58151c;
     --msg-error-border: #f1aeb5;
+    --msg-exito-bg: #d1e7dd;
+    --msg-exito-color: #0a3622;
+    --msg-exito-border: #a3cfbb;
 }
 
 
@@ -109,13 +112,22 @@ header, .enlaces {
     margin-bottom: 0;
 }
 
-.mensaje-error {
-    color: var(--msg-error-color);
-    background-color: var(--msg-error-bg);
-    border: 1px solid var(--msg-error-border);
+.mensaje {
     border-radius: 6px;
     margin-top: 20px;
     padding: 15px;
     width: 100%;
     text-align: center;
+}
+
+.mensaje-error {
+    color: var(--msg-error-color);
+    background-color: var(--msg-error-bg);
+    border: 1px solid var(--msg-error-border);
+}
+
+.mensaje-exito {
+    color: var(--msg-exito-color);
+    background-color: var(--msg-exito-bg);
+    border: 1px solid var(--msg-exito-border);
 }

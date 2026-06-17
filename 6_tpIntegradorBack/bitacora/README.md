@@ -1,3 +1,18 @@
+## Errores http 400
+El **error HTTP 400 Bad Request** es un código de estado del cliente que indica que el servidor no puede procesar la solicitud debido a una **sintaxis incorrecta**, datos corruptos o un formato de petición inválido. A diferencia del error 404 (recurso no encontrado), este fallo se origina en el lado del usuario o del cliente, no en la ausencia del servidor o la página.
+
+Las causas más comunes incluyen:
+*   **URL mal formateadas:** Errores tipográficos, caracteres especiales incorrectos o codificación errónea.
+*   **Caché y cookies corruptas:** Datos almacenados localmente que el navegador envía de forma defectuosa.
+*   **Encabezados demasiado grandes:** El tamaño de los datos en los encabezados HTTP supera los límites permitidos.
+*   **Problemas de DNS:** Caché de DNS obsoleta que dirige la solicitud a una IP incorrecta.
+
+Para solucionarlo, se recomienda **limpiar la caché y cookies** del navegador, verificar la **URL** por caracteres extraños, desactivar extensiones conflictivas y **vaciar la caché de DNS**. Si el error persiste al acceder a un sitio web propio, puede requerir revisar la configuración del servidor o los logs de error.
+
+
+---
+
+
 ## Objeto `FormData` en JavaScript
 **Es el objeto encargado de representar los datos de los formularios HTML.**
 
