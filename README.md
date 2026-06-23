@@ -3,10 +3,38 @@
 ## FECHA RECUPERATORIO 1ER PARCIAL -> *Lunes 08 de junio en paralelo a la clase*
 
 ## Prox clase
-- Terminar optimizacion vista GET by id
-- Optimizaciones endpoints POST, PUT, DELETE
-- Optimizaciones vistas POST, PUT, DELETE
+
+## Lunes 22/06
+- REPASO GENERAL de la parte back 
+- Servira para defender el TP
+
+## Martes 23/06
+- Optimizaciones endpoints
+- Optimizaciones vistas
+
+## Lunes 29/06
 - Modularizacion patron MVC
+- Crear tickets y ventas en el front
+
+## Martes 30/06
+- Setup archivos estaticos
+- EJS
+
+## Lunes 06/07
+- **FUNDAMENTAL TENER TODOS LOS TP HASTA ACA** -> Hacemos Login en clase!
+- Login 
+    - Endpoint
+    - Vista
+
+- Integrar `bcrypt`
+
+## Martes 07/07
+- Defensa las 4hs con los profes
+
+## Lunes 13/07
+- NO HAY CLASE
+- Recuperaciones para obtener Aprobacion Directa
+
 
 ---
 
