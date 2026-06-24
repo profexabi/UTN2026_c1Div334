@@ -71,10 +71,11 @@
 
     <script>
         const contenedorProductos = document.getElementById("contenedor-productos");
+        const urlBase = "http://localhost:3000/api/products";
 
         async function mostrarProductos () {
             try {
-                const response = await fetch("http://localhost:3000/api/products");
+                const response = await fetch(urlBase);
                 const datos = await response.json();
 
                 ////////////////////

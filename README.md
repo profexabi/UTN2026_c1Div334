@@ -9,18 +9,15 @@
 - Servira para defender el TP
 
 ## Martes 23/06
-- Optimizaciones endpoints
-- Optimizaciones vistas
-
-## Lunes 29/06
 - Modularizacion patron MVC
 - Crear tickets y ventas en el front
 
-## Martes 30/06
+
+## Lunes 29/06
 - Setup archivos estaticos
 - EJS
 
-## Lunes 06/07
+## Martes 30/06
 - **FUNDAMENTAL TENER TODOS LOS TP HASTA ACA** -> Hacemos Login en clase!
 - Login 
     - Endpoint
@@ -28,15 +25,20 @@
 
 - Integrar `bcrypt`
 
-## Martes 07/07
+## Lunes 06/07
+- Repaso general?
+- Terminar repaso POST + endpoints
+
+## Martes 07/07 -> **ANTES DE LAS 18:30 ENTREGAR EL TP**
 - Defensa las 4hs con los profes
 
-## Lunes 13/07
+## Lunes 13/07 -> **RECUPERATORIO**
 - NO HAY CLASE
 - Recuperaciones para obtener Aprobacion Directa
 
 
 ---
+
 
 
 ## Recursos

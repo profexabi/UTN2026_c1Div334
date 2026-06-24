@@ -58,6 +58,7 @@ header, .enlaces {
 
 .card-producto img {
     width: 70px;
+    max-height: 75px;
 }
 
 .card-producto h4, .card-producto p {
