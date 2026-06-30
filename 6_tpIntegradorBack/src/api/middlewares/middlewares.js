@@ -72,10 +72,22 @@ const validateProduct = (req, res, next) => {
 
 
 
+// Middleware de ruta basico para proteccion de rutas
+const requireLogin = (req, res, next) => {
+    if (!req.session.user) {
+        return res.redirect("/login");
+    }
+
+    next();
+}
+
+
+
 
 // Exportamos nuestros middlewares para poder utilizarlos donde los vayamos a necesitar
 export {
     loggerURL,
     validateId,
-    validateProduct
+    validateProduct,
+    requireLogin
 }

@@ -1,0 +1,48 @@
+<%- include("partials/head.ejs") %>
+
+<h4 class="texto-login"><%= about %></h4>
+
+<!-- ====================================================
+    Enviando formularios de manera nativa con HTML
+=========================================================
+
+en action="" mandamos la url del endpoint /login
+
+en method="" determinamos si enviamos con GET o con POST la informacion
+
+Gracias al middleware
+
+    app.use(express.urlencoded({
+        extended: true
+    }));
+
+Nuestro endpoint recibira esta informacion (No JSON) como objetos JS
+Es decir, el middleware parseara automaticamente el tipo de info que envia el <form>
+
+-->
+
+<form id="loginForm" class="form-alta" action="/login" method="POST">
+
+    <!-- TO DO, introducir campos REGEX para validar los datos que enviamos -->
+    <label for="emailUser">Email</label>
+    <input type="email" name="email" id="emailUser" value="johnny@melavo.com" required>
+
+    <label for="passwordUser">Password</label>
+    <input type="password" name="password" id="passwordUser" value="melavo" required>
+
+    <div>
+        <input type="submit" value="Login">
+    </div>
+</form>
+
+
+<!-- Mostramos posible mensaje de error del endpoint -->
+<% if(typeof error !== "undefined") { %> 
+
+        <p class="mensaje mensaje-error"><%= error %></p>
+
+<% } %>
+
+
+<!-- Nuestro footer, a falta de completarlo solo contiene los cierres del body y el html -->
+<%- include("partials/footer.ejs") %>

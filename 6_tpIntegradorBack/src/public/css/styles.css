@@ -132,3 +132,12 @@ header, .enlaces {
     background-color: var(--msg-exito-bg);
     border: 1px solid var(--msg-exito-border);
 }
+
+.texto-login {
+    text-align: center;
+    margin-bottom: 40px;
+} 
+
+#loginForm {
+    margin: 0 auto;
+}

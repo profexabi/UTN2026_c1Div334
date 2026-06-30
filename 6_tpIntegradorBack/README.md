@@ -1676,3 +1676,321 @@ async function actualizarProducto(event) {
 }
 
 ```
+
+
+
+---
+
+
+
+# 5. Resumen MVC (Modelo Vista Controlador)
+- Mas info en `5_tpIntegradorBack/bitacora/`!
+
+## Entendiendo refactorizacion y modularizacion
+La **refactorización** es el proceso de mejorar la estructura interna del código sin alterar su comportamiento externo, mientras que la **modularización** implica dividir el código en unidades independientes y cohesivas para mejorar la organización. En el contexto de **Express**, esto significa extraer rutas, modelos y configuraciones de un archivo único (como `index.js`) a archivos separados, previniendo el crecimiento desordenado y facilitando el mantenimiento.
+
+## Patron MVC
+El **patrón MVC** (Modelo-Vista-Controlador) es una arquitectura de software que organiza una aplicación separando sus responsabilidades en tres componentes interconectados pero independientes. Su objetivo principal es desacoplar la lógica de negocio de la interfaz de usuario y la gestión de eventos, facilitando el mantenimiento y la escalabilidad del código.
+
+Los tres componentes fundamentales son:
+
+*   **Modelo (Model)**: Gestiona los datos y la lógica de negocio de la aplicación. Es responsable de recuperar, validar y persistir la información (por ejemplo, interactuando con una base de datos), sin conocer cómo se mostrarán esos datos.
+*   **Vista (View)**: Se encarga de la presentación y la interfaz de usuario. Muestra la información proporcionada por el modelo en un formato legible (como HTML o JSON) y captura las interacciones del usuario, pero no procesa la lógica de los datos.
+*   **Controlador (Controller)**: Actúa como intermediario. Recibe las entradas del usuario (peticiones HTTP), interactúa con el modelo para obtener o modificar datos y selecciona la vista adecuada para renderizar la respuesta.
+
+## Pasos en la refactorizacion de nuestra app
+1. Desacoplar los middlewares, los movimos del `index.js` a `middlewares/middlewares.js`
+
+2. Creamos `/routes/product.routes.js` y hicimos que el index redirigiera las peticiones a las rutas. **El index redirige a las rutas de producto**
+```js
+app.use("/api/products", productRoutes);
+```
+
+
+3. Sacamos el callback de peticiones y respuestas y la enviamos a `/controllers/product.controllers.js`. **Las rutas de producto llaman a los middlewares y al controlador**
+
+4. Sacamos la conexion a la BBDD de los controladores y la enviamos a `/models/product.models.js`. **El controlador de producto llama a el modelo de producto**
+
+![Resumen Modelo Vista Controlador](resumenMVC.png)
+
+
+
+
+---
+
+# TO DO / 6. Migramos las vistas del Dashboard a EJS
+
+
+
+---
+
+
+# 7. Funcionalidad Login
+Un login se compone de una vista, un `<form>` y un endpoint que recibe los datos de ese formulario y los procesa, por tanto crearemos
+
+    1. Una vista `login.ejs`
+    2. Un controlador que renderice esa vista `auth.controllers.js`
+    3. Un modelo para llamar a los usuarios admin de nuestra tabla `user.models.js`
+    4. 
+
+## 6.1  ¿Qué es `express-session`?
+Sin sesiones **no hay forma de saber si el usuario está logueado**, a menos que uses *tokens* (JWT), cookies firmadas, o algún otro sistema.
+
+Por eso existe `express-session`.
+
+#### Instalar [express-session](https://www.npmjs.com/package/express-session)
+```sh
+npm i express-session
+```
+
+`express-session` es un *middleware* que permite que Express recuerde datos entre peticiones.
+Como HTTP es **sin estado**, Express **no sabe quienes somos** entre una ruta y otra.
+
+
+---
+
+
+## 6.2 Crearemos una clave de sesion
+#### ¿Qué es la `SESSION_KEY` / `SESSION_SECRET`?
+Es una **clave privada** que Express usa para **firmar la cookie de sesión**.
+Sirve para evitar que alguien:
+
+* falsifique una sesión
+* la modifique
+* robe una identidad
+
+Ejemplo típico en `.env`:
+
+```
+SESSION_SECRET=miClaveSuperSegura123
+```
+
+Esto permite que Express cree una cookie segura:
+
+```js
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false
+  })
+);
+```
+
+#### ¿Por qué debe estar en `.env`?
+
+* Para que no quede expuesta en el repo.
+* Porque en producción debe ser larga, compleja y secreta.
+* Porque si la alguien roba → puede falsificar sesiones.
+
+
+### Creamos una clave con un [Generador de claves para session](https://secretkeygen.vercel.app/)
+
+
+---
+
+
+## 6.3 Creamos el middleware de `session` para generar sesiones
+- Guardamos esta clave en el `.env`
+```txt
+SESSION_KEY="6ae7227f5e"
+```
+
+- `environments.js`
+Importamos esta clave en el `environments.js`
+```js
+session_key: process.env.SESSION_KEY
+```
+
+- Usamos el middleware de session no `index.js`
+```js
+// PASO 1: Importamos express-session
+import session from "express-session";
+
+// Hacemos destructuring de port y de session_key de enviroonments
+const { port, session_key } = environments;
+
+// Paso 2: Middleware de sesion
+app.use(session({
+    secret: session_key, // Firma las cookies para evitar manipulación. **¡Debe ser aleatoria y secreta!**
+    resave: false, // Evita guardar la sesion si no hubo cambios
+    saveUninitialized: true // No guarda sesiones vacias
+}));
+
+// Paso 3: Middleware para parsear info de <form>
+app.use(express.urlencoded({ extended: true })); // // Middleware necesario para leer formularios HTML <form method="POST">
+
+```
+
+
+---
+
+
+## 6.4 Creamos el middleware `requireLogin` para proteger las rutas de nuestras vistas
+- En `middlewares.js`
+```js
+// Middleware simple de proteccion de rutas
+const requireLogin = (req, res, next) => {
+    if (!req.session.user) {
+        return res.redirect("/login")
+    }
+
+    next();
+}
+```
+
+---
+
+- En `view.routes.js`
+```js
+router.get("/index", requireLogin, indexView);
+
+router.get("/consultar", requireLogin, getView);
+
+router.get("/crear", requireLogin, postView);
+
+router.get("/modificar", requireLogin, putView);
+
+router.get("/eliminar", requireLogin, deleteView)
+```
+
+
+---
+
+
+## 6.5 Creamos la vista del formulario de login, `login.ejs`
+```html
+<%- include("partials/head.ejs") %>
+
+<h2><%= about %></h2>
+
+<!--=====================================================
+    Enviando formularios de manera nativa con HTML
+=========================================================
+
+en action="" mandamos la url del endpoint /login
+
+en method="" determinamos si enviamos con GET o con POST la informacion
+
+Gracias al middleware
+
+    app.use(express.urlencoded({
+        extended: true
+    }));
+
+Nuestro endpoint recibira esta informacion (No JSON) como objetos JS
+Es decir, el middleware parseara automaticamente el tipo de info que envia el <form>
+
+-->
+
+<form id="loginForm" class="form-alta" action="/login" method="POST">
+
+    <!-- TO DO, introducir campos REGEX para validar los datos que enviamos -->
+    <label for="emailUser">Email</label>
+    <input type="email" name="email" id="emailUser" value="johnny@melavo.com" required>
+
+    <label for="passwordUser">Password</label>
+    <input type="password" name="password" id="passwordUser" value="melavo" required>
+
+    <div>
+        <input type="submit" value="Login">
+    </div>
+</form>
+
+
+<!-- Mostramos posible mensaje de error del endpoint -->
+<% if(typeof error !== "undefined") { %> 
+
+        <p class="mensaje mensaje-error"><%= error %></p>
+
+<% } %>
+
+
+<!-- Nuestro footer, a falta de completarlo solo contiene los cierres del body y el html -->
+<%- include("partials/footer.ejs") %>
+```
+
+
+---
+
+
+## 6.6 Creamos el endpoint POST para iniciar sesion con el login y el email
+```js
+app.post("/login", async (req, res) => {
+
+    try {
+        // Recibimos el email y el password del cuerpo de la peticion 
+        const { email, password } = req.body;
+
+        // Evitamos consulta innecesaria
+        if(!email || !password) {
+            return res.render("login", {
+                // Le mandamos a la vista el mensaje de error
+                error: "Tódolos campos son obrigatorios"
+        }
+    
+        const sql = "SELECT * FROM usuarios where email = ? AND password = ?";
+        let [rows] = await connection.query(sql, [email, password]);
+    
+        if(rows.length === 0)  {
+            return res.render("login", { 
+                // La plantilla puede acceder al error
+                error: "Credenciais incorrectas"
+            })
+        }
+
+        const user = rows[0];
+        console.table(user);
+    
+        // Guardamos sesion
+        req.session.user = {
+            id: user.id,
+            nombre: user.nombre,
+            email: user.email
+        }
+     
+        res.redirect("/dashboard");
+
+    } catch (error) {
+        console.error("Error en el login: ", error);
+        res.status(500).json({
+            error: "Erro interno del servidor"
+        })
+    }
+});
+```
+
+
+---
+
+
+## 6.7 Creamos la vista del boton logout dentro del nav
+Una vez que accedamos al dashboard, despues de un login exitoso y nos manejemos en nuestras vistas privadas, tendremos que tener la capacidad de cerrar la sesion
+
+Crearemos el boton en el nav de nuestras vistas para salir de la sesion eixstente
+- En `nav.ejs`
+```html
+<form action="/login/destroy" method="POST">
+    <input class="btn-logout links-header" type="submit" value="Cerrar sesion">
+</form>
+```
+
+
+---
+
+
+## 6.8 Crearemos el endpoint para destruir la sesion
+```js
+// Ruta para pechar sesion (destruir sesion e redireccionar)
+app.post("/login/destroy", (req, res) => {
+    req.session.destroy((err) => { // Destruir la sesion
+        if(err) {
+            console.error("Erro al destruir a sesion: ", err);
+            return res.status(500).json({
+                error: "Erro al pechar sesion"
+            })
+        }
+        res.redirect("/login"); // Redirixir a la página de login luego de cerrar la sesión
+    })
+})
+```

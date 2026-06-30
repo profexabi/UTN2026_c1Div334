@@ -48,5 +48,8 @@ export const updateView = (req, res) => {
 
 // Vista DELETE
 export const deleteView = (req, res) => {
-    res.render("delete");
+    res.render("delete", {
+        title: "Eliminar",
+        about: "Consultar producto por id:"
+    });
 }
