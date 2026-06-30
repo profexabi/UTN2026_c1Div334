@@ -1,0 +1,40 @@
+<%- include("partials/head.ejs") %>
+<%- include("partials/nav.ejs") %>
+
+<main>
+
+    <section class="form-productos">
+        <h2> <%= about %> </h2>
+        
+        <form id="postProduct-form" class="form-alta">
+            <label for="nameProd">Nombre</label>
+            <input type="text" name="name" id="nameProd" required>
+
+            <label for="imageProd">Imagen</label>
+            <input type="text" name="image" id="imageProd" required>
+
+            <label for="categoryProd">Categoria</label>
+            <select name="category" id="categoryProd" required>
+                <option value="food">comida</option>
+                <option value="drink">bebida</option>
+            </select>
+
+            <label for="priceProd">Precio</label>
+            <input type="number" name="price" id="priceProd" required>
+            
+            <div>
+                <input type="submit" value="Crear producto">
+            </div>
+        </form>
+
+    </section>
+
+    <section class="secccion-productos">
+        <div id="contenedor-productos">
+
+        </div>
+    </section>
+</main>
+
+<script src="/js/post.js"></script>
+<%- include("partials/footer.ejs") %>

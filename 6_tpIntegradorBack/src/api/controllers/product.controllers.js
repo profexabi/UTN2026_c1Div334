@@ -2,7 +2,7 @@
     Controladores productos
 ================================*/
 
-import connection from "../database/db.js";
+// Importamos el modelo de los productos para poder comunicarlos con la BBDD
 import ProductModels from "../models/product.models.js"
 
 //////////////////////

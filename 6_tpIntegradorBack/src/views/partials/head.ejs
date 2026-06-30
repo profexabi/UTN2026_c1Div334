@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> <%= title %> </title>
+
+    <!-- Apuntamos al recurso dentro de public
+    Esta ruta seria:
+        localhost:3000/assets/img/favicon.ico 
+    -->
+    <!-- Pasamos de la ruta desde el index.html -> assets... 
+    A la ruta relativa donde agregamos una /
+    para que apunte a localhost:3000/assets/img/favicon.ico 
+    -->
+    <link rel="shortcut icon" href="/assets/img/favicon.ico" type="image/x-icon">
+    
+    <!-- Preset CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/sakura.css/css/sakura-vader.css" type="text/css">
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>

@@ -1,3 +1,14 @@
+## Como hacer refresh de la cache
+Para **refrescar la caché** del navegador y forzar la carga de contenido actualizado sin limpiar toda la memoria, se utiliza el **refresco duro** (hard refresh). Los atajos de teclado estándar son:
+
+*   **Windows/Linux**: `Ctrl` + `F5` o `Ctrl` + `Shift` + `R`.
+*   **Mac**: `Cmd` + `Shift` + `R` o `Option` + `Cmd` + `E` (para vaciar la caché de Safari) seguido de `Cmd` + `R`.
+
+Si necesitas **vaciar la caché** de forma permanente para un sitio específico, puedes usar las herramientas de desarrollo del navegador (`F12`), hacer clic derecho en el botón de recargar y seleccionar **"Empty Cache and Hard Reload"**, o borrar los datos de navegación desde la configuración del navegador. En el desarrollo web, también es común actualizar los archivos añadiendo un parámetro de consulta (ej. `archivo.js?v=2`) para invalidar la caché automáticamente.
+
+
+---
+
 ## Que es el middleware `Router`?
 El **middleware Router** en Express es un sistema de enrutamiento y middleware aislado que se ejecuta únicamente en una instancia de `express.Router()`. A menudo se le denomina una **"mini-aplicación"** porque posee su propia pila de middleware y rutas, independiente de la aplicación principal.
 
