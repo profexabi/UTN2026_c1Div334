@@ -1715,17 +1715,11 @@ app.use("/api/products", productRoutes);
 
 
 
-
----
-
-# TO DO / 6. Migramos las vistas del Dashboard a EJS
-
-
-
 ---
 
 
-# 7. Funcionalidad Login
+
+# 6. Funcionalidad Login
 Un login se compone de una vista, un `<form>` y un endpoint que recibe los datos de ese formulario y los procesa, por tanto crearemos
 
     1. Una vista `login.ejs`
@@ -1994,3 +1988,304 @@ app.post("/login/destroy", (req, res) => {
     })
 })
 ```
+
+
+---
+
+# 7. Agregamos `bcrypt` para hashear las contraseñas
+### Que es hashear una contraseña?
+El **hash de contraseña** es el proceso de convertir una contraseña en texto plano mediante un **algoritmo criptográfico unidireccional** para generar una cadena de caracteres de longitud fija y única, conocida como hash. Este mecanismo es fundamental en la ciberseguridad porque **no es reversible**, lo que significa que, a diferencia del cifrado, no existe una clave para descifrar el hash y recuperar la contraseña original.
+
+Cuando un usuario se registra, el sistema almacena únicamente este valor hash en la base de datos. Durante el inicio de sesión, el sistema vuelve a aplicar el algoritmo hash a la contraseña ingresada y compara el resultado con el almacenado; si coinciden, se concede el acceso. Esta práctica asegura que, incluso si una base de datos es comprometida, los atacantes no obtienen las contraseñas reales, sino solo cadenas ilegibles que requieren costosos procesos de fuerza bruta o ataques de diccionario para intentar descifrar.
+
+
+## 7.1 Creamos usuarios admin agregando un nuevo formulario de creacion de usuarios en la vista `post.ejs`
+
+```html
+<div class="form-container">
+    <h2>Crear usuario</h2>
+    
+    <form id="postUser-form" class="form-alta">
+
+        <!-- Nombre de usuario -->
+        <label for="nameUser">Nombre</label>
+        <input type="text" name="nameUser" id="nameUser" required>
+
+        <!-- Email de usuario -->
+        <label for="emailUser">Email</label>
+        <input type="email" name="emailUser" id="emailUser" required>                    
+        
+        <!-- Password de usuario -->
+        <label for="passUser">Password</label>
+        <input type="text" name="passUser" id="passUser" required>
+
+        <div>
+            <input type="submit" value="Crear usuario">
+        </div>
+
+    </form>
+
+</div>
+```
+
+Agregamos JavaScript para enviar esos datos al servidor en `post.js`
+```js
+//////////////////////
+// Enviando usuario
+postUserForm.addEventListener("submit", async event => {
+    event.preventDefault(); // Evitamos el envio por defecto del formulario
+
+    // Obtenemos la data del formulario
+    const formData = new FormData(event.target);
+
+    // Convertimos nuestro objeto formdata en un objeto literal de JavaScript
+    const data = Object.fromEntries(formData.entries());
+    console.table(data);
+
+    const jsonData = JSON.stringify(data);
+    console.log(jsonData);
+
+    try {
+        
+        const response = await fetch("http://localhost:3000/api/users/", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: jsonData
+        });
+
+        console.log(response);
+        const result = await response.json();
+
+        if (!response.ok) {
+            mostrarMensaje("error", result.message);
+            return;
+        }
+
+        // Mostramos el mensaje de exito y reseteamos el form
+        const infoUser = `${result.message} con id ${result.userId}`
+        mostrarMensaje("exito", infoUser)
+        console.log(infoUser);
+
+        event.target.reset();
+
+    } catch (error) {
+        console.error("Error al enviar los datos: ", error);
+    }
+
+});
+```
+
+
+---
+
+
+## 7.2 Instalamos bcrypt y creamos el endpoint que reciba este nuevo usuario con su contraseña hasheada
+
+#### Instalamos [bcrypt](https://www.npmjs.com/package/bcrypt)
+```sh
+npm i bcrypt
+```
+
+### 7.2.1 Derivamos desde el `index.js` todas las consultas a `/api/users` a la rutas del usuario
+```js
+app.use("/api/users", userRoutes); // Rutas de usuario
+```
+
+
+---
+
+
+### 7.2.2 Creamos las rutas de usuario `/routes/user.routes.js`
+```js
+/*========================
+    Rutas de usuario
+========================*/
+
+import { Router } from "express";
+import { createAdminUser } from "../controllers/user.controllers.js";
+const router = Router();
+
+// POST product
+router.post("/", createAdminUser);
+
+
+// Exportamos todas las rutas y las centralizamos en el archivo de barril -> index.js
+export default router;
+```
+
+Y las exportamos al archivo de barril `router/index.js`
+```js
+/*========================
+    Archivo de barril
+========================*/
+// Centralizamos en este archivo "de barril" todas las rutas y las exportamos con un nombre
+import productRoutes from "./product.routes.js";
+import viewRoutes from "./view.routes.js";
+import authRoutes from "./auth.routes.js"
+import userRoutes from "./user.routes.js"
+
+// Archivo de barril que contiene todas las rutas
+export {
+    productRoutes,
+    viewRoutes,
+    authRoutes,
+    userRoutes
+}
+```
+
+
+---
+
+
+### 7.2.3 Creamos el controlador de usuarios `/controllers/user.controllers.js`
+
+- **Es acá donde importamos bcrypt y hasheamos el password enviado por el formulario a `/api/users` con el metodo `bcrypt.hash()`**
+```js
+/*================================
+    Controladores de usuario
+================================*/
+
+import userModels from "../models/user.models.js";
+import bcrypt from "bcrypt";
+
+//////////////////////
+// Create new product
+export const createAdminUser = async (req, res) => {
+
+    try {
+        // Recogemos los datos limpios del body
+        const { nameUser, emailUser, passUser } = req.body;
+
+        // Bcrypt 1 -> Vamos a hashear el nuevo password del user admin
+        const saltRounds = 10;
+        const hashedPassword = await bcrypt.hash(passUser, saltRounds);
+
+        const [rows] = await userModels.insertAdminUser(nameUser, emailUser, hashedPassword);
+        
+        // Optimizacion 4: En lugar de 201, devolvemos un 201 "Created"
+        res.status(201).json({
+            message: `Usuario creado con exito`,
+            userId: rows.insertId
+        });
+
+    } catch (error) {
+        console.log(error);
+
+        // Optimizacion 5: Devolvemos un codigo de estado 500
+        res.status(500).json({
+            message: "Error interno del servidor"
+        });
+    }
+}
+```
+
+---
+
+
+### 7.2.4 Creamos el modelo de usuarios en `/models/user.models.js`
+```js
+/*================================
+    Modelos de usuario
+================================*/
+
+import connection from "../database/db.js";
+
+
+/////////////////////////////////
+// Crear producto
+const insertAdminUser = (name, email, password) => {
+    const sql = "INSERT INTO users (name, email, password) VALUES (?, ?, ?)";
+    
+    // Optimizacion 3: Devolvemos la respuesta en un rows para devolver info util como el id asignado al nuevo producto
+    return connection.query(sql, [name, email, password]);
+}
+
+export default {
+    insertAdminUser
+}
+```
+
+---
+
+
+### 7.2.5 Ahora en el controlador de autenticacion `/controllers/auth.controllers.js` comparamos si el hash del password que se envio coincide con el hash de la base de datos
+
+```js
+/////////////////////////////////
+// Procesamos los datos del login del <form>
+export const processLoginInfo = async (req, res) => {
+
+    try {
+        // Recibimos los datos de los campos email y password
+        // Estos datos, gracias al middleware de parseo de urlencoded ya entran a este endpoint como objetos JS
+        const { email, password } = req.body;
+
+        // Evitamos una consulta innecesaria
+        if(!email || !password) {
+            return res.render("login", {
+                title: "Login",
+                about: "Introduci tus credenciales",
+                error: "Faltan campos en el formulario"
+            });            
+        }
+
+
+        /*
+        // TO DO, Crearemos el modelo de usuarios
+        const sql = "SELECT * FROM users where email = ? AND password = ?";
+        const [rows] = await connection.query(sql, [email, password]);
+        */
+
+        // Bcrypt 1 -> Traemos solamente el usuario por su email
+        const sql = "SELECT * FROM users where email = ?";
+        const [rows] = await connection.query(sql, [email]);
+
+        // TO DO, mensaje de error si no existe el usuario admin
+        if (rows.length === 0) {
+            return res.render("login", {
+                title: "Login",
+                about: "Introduci tus credenciales",
+                error: "No existe el usuario"
+            });   
+        }
+
+        // Guardamos el usuario que recibimos en la variable rows
+        // id, name, email, password
+
+        const user = rows[0];
+        console.table(user);
+
+        // Bcrypt 2 -> Comparamos si el hasheo de este password es igual al hasheo de la BBDD
+        const match = await bcrypt.compare(password, user.password);
+        console.log(match);
+
+        // Bcrypt 3 -> Si coinciden los hashes, match devuelve true y continuamos con el login
+        if (match) {
+            // Una vez que recibimos a nuestro usuario admin, vamos a creada una sesion
+            req.session.user = {
+                id: user.id,
+                name: user.name,
+                email: user.email
+            }
+    
+            // Ya con la nueva sesion creada, redirigimos al dashboard
+            res.redirect("/dashboard/index");
+
+        } else {
+            return res.render("login", {
+                title: "Login",
+                about: "Introduci tus credenciales",
+                error: "Password invalido"
+            });
+        }
+
+
+    } catch (error) {
+        console.log(error);
+    }
+}
+```
+
+Listo!
