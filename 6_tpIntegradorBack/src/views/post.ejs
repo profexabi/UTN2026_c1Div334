@@ -4,28 +4,56 @@
 <main>
 
     <section class="form-productos">
-        <h2> <%= about %> </h2>
-        
-        <form id="postProduct-form" class="form-alta">
-            <label for="nameProd">Nombre</label>
-            <input type="text" name="name" id="nameProd" required>
 
-            <label for="imageProd">Imagen</label>
-            <input type="text" name="image" id="imageProd" required>
-
-            <label for="categoryProd">Categoria</label>
-            <select name="category" id="categoryProd" required>
-                <option value="food">comida</option>
-                <option value="drink">bebida</option>
-            </select>
-
-            <label for="priceProd">Precio</label>
-            <input type="number" name="price" id="priceProd" required>
+        <div class="form-container">
+            <h2>Crear producto</h2>
             
-            <div>
-                <input type="submit" value="Crear producto">
-            </div>
-        </form>
+            <form id="postProduct-form" class="form-alta">
+                <label for="nameProd">Nombre</label>
+                <input type="text" name="name" id="nameProd" required>
+    
+                <label for="imageProd">Imagen</label>
+                <input type="text" name="image" id="imageProd" required>
+    
+                <label for="categoryProd">Categoria</label>
+                <select name="category" id="categoryProd" required>
+                    <option value="food">comida</option>
+                    <option value="drink">bebida</option>
+                </select>
+    
+                <label for="priceProd">Precio</label>
+                <input type="number" name="price" id="priceProd" required>
+                
+                <div>
+                    <input type="submit" value="Crear producto">
+                </div>
+            </form>
+        </div>
+
+
+        <div class="form-container">
+            <h2>Crear usuario</h2>
+            <form id="postUser-form" class="form-alta">
+    
+                <!-- Nombre del usuario -->
+                <label for="nameUser">Nombre</label>
+                <input type="text" name="nameUser" id="nameUser" required>
+    
+                <!-- Email del usuario -->
+                <label for="emailUser">Email</label>
+                <input type="email" name="emailUser" id="emailUser" required>
+    
+                <!-- Password del usuario -->
+                <label for="passwordUser">Password</label>
+                <input type="password" name="passwordUser" id="passwordUser" required>
+    
+                <div>
+                    <input type="submit" value="Crear usuario">
+                </div>
+
+            </form>
+
+        </div>
 
     </section>
 

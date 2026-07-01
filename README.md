@@ -16,25 +16,32 @@
 ## Lunes 29/06
 - Setup archivos estaticos
 - EJS
-
-## Martes 30/06
-- **FUNDAMENTAL TENER TODOS LOS TP HASTA ACA** -> Hacemos Login en clase!
 - Login 
     - Endpoint
     - Vista
 
+## Martes 30/06
+- Terminar funcionalidad para destruir la sesion
+    - form boton logout
+    - Endpoint para destruir la sesion y redirigir a login
+
 - Integrar `bcrypt`
 
 ## Lunes 06/07
-- Repaso general?
-- Terminar repaso POST + endpoints
+- **ULTIMO REPASO GENERAL**
+- Live Coding? Terminar repaso POST + endpoints
+- Posibles exceljs, crear ventas
 
 ## Martes 07/07 -> **ANTES DE LAS 18:30 ENTREGAR EL TP**
+- Requisitos obligatorios, todo el TP hasta login + bcrypt
 - Defensa las 4hs con los profes
 
 ## Lunes 13/07 -> **RECUPERATORIO**
 - NO HAY CLASE
 - Recuperaciones para obtener Aprobacion Directa
+    - Multer
+    - Descarga de excels -> Productos y ventas
+    - Paginacion
 
 
 ---

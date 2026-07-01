@@ -5,7 +5,7 @@ import express from "express";
 import environments from "./src/api/config/environments.js";
 import cors from "cors";
 import { loggerURL } from "./src/api/middlewares/middlewares.js";
-import { authRoutes, productRoutes, viewRoutes } from "./src/api/routes/index.js";
+import { authRoutes, productRoutes, userRoutes, viewRoutes } from "./src/api/routes/index.js";
 import { join, __dirname } from "./src/api/utils/index.js";
 import session from "express-session";
 
@@ -50,6 +50,7 @@ app.use(session({
 /////////////
 // Rutas
 app.use("/api/products", productRoutes);
+app.use("/api/users", userRoutes);
 app.use("/dashboard", viewRoutes);
 app.use("/login", authRoutes);
 /*

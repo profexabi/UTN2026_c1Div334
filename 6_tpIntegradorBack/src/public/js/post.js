@@ -1,5 +1,6 @@
 const contenedorProductos = document.getElementById("contenedor-productos");
 const postProductForm = document.getElementById("postProduct-form");
+const postUserForm = document.getElementById("postUser-form");
 
 //////////////////
 // Optimizacion 3: Validacion previa de los datos en el cliente
@@ -31,6 +32,45 @@ function mostrarMensaje(tipo, mensaje) {
     `;
 }
 
+
+postUserForm.addEventListener("submit", async event => {
+    event.preventDefault();
+
+    const formData = new FormData(event.target);
+    const data = Object.fromEntries(formData.entries());
+    console.table(data);
+
+    try {
+        const urlBase = "http://localhost:3000/api/users/"
+        const response = await fetch(urlBase, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data)
+        });
+
+        console.log(response);
+        const result = await response.json();
+
+        // Optimizacion 5: Manejamos respuestas no ok del servidor
+        if (!response.ok) {
+            mostrarMensaje("error", result.message);
+            return;
+        }
+
+        // alert(result.message);
+        console.log(result.message);
+
+        // Optimizacion 4: Reutilizamos la funcion de mostrarMensaje
+        mostrarMensaje("exito", result.message);
+
+    } catch (error) {
+        console.error("Error al enviar los datos: ", error);
+        mostrarMensaje("error", "Error al procesar la solcitud")
+    }
+
+})
 
 
 postProductForm.addEventListener("submit", async event => {
