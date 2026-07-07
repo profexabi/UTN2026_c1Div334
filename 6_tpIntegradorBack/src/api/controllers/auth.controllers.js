@@ -42,10 +42,6 @@ export const getAdminUser = async (req, res) => {
         // Bcrypt 1 -> Pedir solo el usuario que exista con ese email
         const sql = "SELECT * FROM users WHERE email = ?";
         const [rows] = await connection.query(sql, [email]);
-
-        
-
-        
         
         if (rows.length === 0) {
             return res.render("login", {
