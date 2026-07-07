@@ -1,24 +1,32 @@
 # UTN2026_c1Div334
 
-## FECHA RECUPERATORIO 1ER PARCIAL -> *Lunes 08 de junio en paralelo a la clase*
-
-## Prox clase
-
-## Lunes 22/06
-- REPASO GENERAL de la parte back 
-- Servira para defender el TP
-
-## Martes 23/06
-- Modularizacion patron MVC
-- Crear tickets y ventas en el front
+### Recordatorio de fechas de la cursada 2026 c1
 
 
-## Lunes 29/06
-- Setup archivos estaticos
-- EJS
-- Login 
-    - Endpoint
-    - Vista
+#### 1. DEFENSA TP Integrador / Martes 7 Julio 18:30
+
+Defensa TP y entra hasta Login + bcrypt
+- Defensa explicando bien el TP modularizado
+- Entendiendo que hace cada carpeta y por que se organiza asi
+- Como se conectan entre si los modulos
+- Idea general de como se comunican las aplicaciones en la web, idea general de API, API Rest, entorno de ejecucion, protocolo HTTP
+
+---
+
+#### 2. Recuperatorio del TP, Lunes 13/07
+
+Tambien aprobacion directa
+Entra todo lo anterior, sumando la integracion de
+- Multer
+- ExcelJS
+- Paginacion en el dashboard
+
+
+#### 3. FINAL (fechas a elegir)
+
+- Integrar todo lo anterior y sumarle todos los requisitos del EXTRA para final
+
+---
 
 ## Martes 30/06
 - Terminar funcionalidad para destruir la sesion

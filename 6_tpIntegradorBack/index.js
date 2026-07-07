@@ -10,18 +10,21 @@ import { join, __dirname } from "./src/api/utils/index.js";
 import session from "express-session";
 
 
+
 ///////////
 // Config
-const { port, session_key } = environments;
-const app = express();
+const { port, session_key } = environments; // Gracias al destructuring extraemos la info del puerto y la clave de sesion
+const app = express(); // Inicializamos la instancia de express para poder usar sus metodos
 const PORT = port;
 
 app.set("view engine", "ejs"); // Configuramos EJS como motor de plantillas
 app.set("views", join(__dirname, "src/views")); // Ahora la app sabe donde encontrar estas vistas para servirlas con res.render("index")
 
 
+
 /////////////////
 // Middlewares
+// Con el app.use() estamos invocando un middleware de aplicacion (se ejecuta en todas las peticiones)
 app.use(cors()); // Middleware CORS basico para permitir todas las solicitudes
 
 // Middleware logger para mostrar todas las solicitudes por consola
@@ -47,15 +50,14 @@ app.use(session({
 }));
 
 
+
 /////////////
 // Rutas
 app.use("/api/products", productRoutes);
 app.use("/api/users", userRoutes);
 app.use("/dashboard", viewRoutes);
 app.use("/login", authRoutes);
-/*
-app.use("/api/users", rutasUsuario);
-*/
+
 
 
 app.listen(PORT, () => {

@@ -1,12 +1,12 @@
 // Importamos el modulo mysql2 en modo promesas, apra poder hacer peticiones asincronas a la BBDD
-import mysql2 from "mysql2/promise";
+import mysql2 from "mysql2/promise"; // Recuerden que usamos PROMESAS aca!
 import environments from "../config/environments.js"; // Importamos la info de la conexion a la BBDD
 
 // Traemos la info del .env que lee y exporta el archivo
 const { database } = environments;
 
 
-// Creamos la conexion (un pool de conexinoes a la BBDD)
+// Creamos la conexion, mas concretamente el CONJUNTO DE CONEXIONES ABIERTAS a la BBDD(a esto lo llamamos pool de conexiones)
 const connection = mysql2.createPool({
     host: database.host,
     database: database.name,
@@ -15,6 +15,8 @@ const connection = mysql2.createPool({
 });
 
 export default connection; // Exportamos el pool de conexiones para que pueda ser usando en otros archivos
+
+// ESTA CONEXION LA IMPORTARA LA CARPETA MODELS/ que se encarga (segun el patron MVC) de la comunicacion con la BBDD
 
 /*=================
     Explicacion

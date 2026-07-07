@@ -2,7 +2,9 @@
     Controladores productos
 ================================*/
 
-// Importamos el modelo de los productos para poder comunicarlos con la BBDD
+// Los controladores se encargan de gestionar toda la logica de las peticiones (req) y respuestas (res)
+
+// Importamos el modelo de los productos para poder comunicarlos con la BBDD. Los importo con un nombre para poder entender mejor la llamada al modelo (para que el codigo sea mas entendible, explicito y por tanto mantenible)
 import ProductModels from "../models/product.models.js"
 
 //////////////////////
@@ -10,7 +12,7 @@ import ProductModels from "../models/product.models.js"
 export const getAllProducts = async (req, res) => {
     try {
 
-        
+        // Aca el controlador (que no debe hacer mas que la logica de gestion de req y res) llama al modelo
         const [rows] = await ProductModels.selectAllProducts();
         // En rows guardamos los resultados de nuestra sentencia SQL
         // console.log(rows);
@@ -25,21 +27,22 @@ export const getAllProducts = async (req, res) => {
         }
         
         res.status(200).json({
-            
             ///////////////////
             // Optimizacion 3: Opcional, podemos devolver la cantidad de productos
             total: rows.length,
             payload: rows
         });
 
+
     } catch (error) {
+        // En caso de que la promise del modelo se haya resuelto como REJECTED, vere en la consola del editor el mensaje del error para obtener informacion sobre el fallo y poder depurarlo
         console.log("Error obteniendo productos: ", error.message);
 
         ///////////////////
         // Optimizacion 4: Si fallo la conexion a la BBDD, tardo demasiado, la tabla no existe o hay error de sintaxis
         res.status(500).json({
             message: "Error interno al obtener productos"
-        })
+        });
     }
 }
 

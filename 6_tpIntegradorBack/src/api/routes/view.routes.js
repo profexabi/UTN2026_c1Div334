@@ -7,6 +7,8 @@ import { createView, deleteView, getView, indexView, updateView } from "../contr
 import { requireLogin } from "../middlewares/middlewares.js";
 const router = Router();
 
+// TODAS las vistas del dashboard, previamente a llamar a su controlador y devolvernos la vista comprobaran si existe una sesion previamente gracias al middleware requireLogin
+
 // Vista principal del dashboard
 router.get("/index", requireLogin, indexView);
 

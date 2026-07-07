@@ -2,7 +2,10 @@
     Modelos de productos
 ================================*/
 
+// Importamos el pool de conexiones de la carpeta database
 import connection from "../database/db.js";
+
+// El modelo se encarga de la COMUNICACION con la BBDD, es el controlador el que invoca al MODELO
 
 ///////////////////////////////
 // Traer todos los productos
